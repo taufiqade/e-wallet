@@ -41,18 +41,18 @@ export default class TransactionHandler {
               user_balance_id: user.id,
               balance_before: user.balance,
               balance_after: balance,
-              activity: input.activity,
+              activity: "Transfer",
               type: idx === 0 ? "credit": "debit",
               ip: input.ip,
               location: input.location,
               user_agent: input.user_agent,
               author: input.author,
-            })
+            }, t)
             // update user balance
             // balance_achieve is the total balance received, it will not decrease
             // balance is current balance
             const balanceAchieve = idx === 0 ? user.balance_achieve: user.balance_achieve + amount;
-            this.userBalanceRepo.update({ balance, balance_achieve:balanceAchieve }, user.id)
+            this.userBalanceRepo.update({ balance, balance_achieve:balanceAchieve }, user.id, t)
           })
 
           await Promise.all(promises)
@@ -61,6 +61,38 @@ export default class TransactionHandler {
       } catch (error) {
         reply.send(error)
       }
-    };
+    }
+  }
+  public topup(): RequestHandler {
+    return async (request: FastifyRequest, reply: FastifyReply<ServerResponse>) => {
+      try {
+        const input = request.body
+
+        const user = await this.userRepo.findBy({email: input.email})
+        if(!user) throw new ApiError(404, `${input.email} not found`);
+
+        const userBalance = await this.userBalanceRepo.findById(user.id)
+
+        return await this.sequelize.transaction(async (t) => {
+          const balance = userBalance.balance + input.amount
+          const insert = this.userBalanceHistoryRepo.store({
+            user_balance_id: userBalance.id,
+            balance_before: userBalance.balance,
+            balance_after: balance,
+            activity: "TopUp",
+            type: "debit",
+            ip: input.ip,
+            location: input.location,
+            user_agent: input.user_agent,
+            author: input.author,
+          }, t)
+          const update = this.userBalanceRepo.update({ balance }, userBalance.id, t)
+          await Promise.all([insert, update])
+          return { message: "transaction successfully executed" }
+        })
+      } catch (error) {
+        reply.send(error)
+      }
+    }
   }
 }

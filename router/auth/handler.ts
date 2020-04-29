@@ -31,7 +31,7 @@ export default class Auth {
 
   public check(): RequestHandler{
     return async(request: FastifyRequest, reply) => {
-      reply.send(request.user) ;
+      reply.send(request.user);
     }
   }
 }

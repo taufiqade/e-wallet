@@ -7,7 +7,7 @@ export default class DBUserBalanceHistoryRepository {
     this.db = db;
   }
 
-  store(data) {
-    return this.db.UserBalanceHistory.create(data);
+  store(data, t) {
+    return this.db.UserBalanceHistory.create(data, { transaction: t});
   }
 }

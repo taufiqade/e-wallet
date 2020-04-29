@@ -9,9 +9,9 @@ export interface IUserRepository {
 
 export interface IUserBalanceRepository {
   findById(id: number): Promise<IUserBalance>;
-  update(data: object, id: number): Promise<boolean>;
+  update(data: object, id: number, transaction): Promise<boolean>;
 }
 
 export interface IUserBalanceHistoryRepository {
-  store(data: IUserBalanceHistory): Promise<boolean>;
+  store(data: IUserBalanceHistory, transaction): Promise<boolean>;
 }

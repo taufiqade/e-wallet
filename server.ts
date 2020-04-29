@@ -33,6 +33,10 @@ server.register(fastifyOas, {
           type: "http",
           scheme: "bearer",
         },
+        BasicAuth: {
+          type: "http",
+          scheme: "basic",
+        },
       },
     },
   },

@@ -13,9 +13,10 @@ export default class DBUserBalanceRepository {
     })
   }
 
-  update(data: object, id: number) {
+  update(data: object, id: number, t) {
     return this.db.UserBalance.update(data, {
-      where: {id}
+      where: {id},
+      transaction: t
     });
   }
 }

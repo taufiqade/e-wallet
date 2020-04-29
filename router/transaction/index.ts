@@ -4,6 +4,7 @@ import { IncomingMessage, ServerResponse } from "http";
 import { transaction } from "../../bootstrap";
 import { IUser } from "../../model/user.interface";
 import userCheck from "./../../lib/userCheckMiddleware"
+import basicAuthMiddleware from "../../lib/basicAuthMiddleware";
 
 export default function(server) {
   const opts = {
@@ -28,6 +29,16 @@ export default function(server) {
     }
   }
 
+  const basicOpts = {
+    preHandler: async (
+      request: FastifyRequest,
+      reply: FastifyReply<ServerResponse>,
+    ) => {
+      await basicAuthMiddleware(request, reply);
+      return;
+    }
+  }
+
   ////////////////////////////////////////////////////////////////////////
   server.post('/transaction', {
     ...opts,
@@ -39,7 +50,6 @@ export default function(server) {
         properties: {
           email: { type: "string" },
           amount: { type: "number", minimum: 1 },
-          activity: { type: "string" },
           ip: { type: "string" },
           location: { type: "string" },
           user_agent: { type: "string" },
@@ -50,6 +60,29 @@ export default function(server) {
       security: [{bearerAuth: []}],
     },
   }, transaction.transfer())
+  ////////////////////////////////////////////////////////////////////////
 
+
+  ////////////////////////////////////////////////////////////////////////
+  server.post('/topup', {
+    ...basicOpts,
+    schema: {
+      description: "topup into user balance",
+      body: {
+        type: "object",
+        required: [ "email", "amount", "ip", "location", "user_agent", "author" ],
+        properties: {
+          email: { type: "string" },
+          amount: { type: "number", minimum: 1 },
+          ip: { type: "string" },
+          location: { type: "string" },
+          user_agent: { type: "string" },
+          author: { type: "string" },
+        },
+      },
+      tags: ["transaction"],
+      security: [{BasicAuth: []}],
+    },
+  }, transaction.topup())
   ////////////////////////////////////////////////////////////////////////
 }
