@@ -5,6 +5,7 @@ import fastify, {
   RouteShorthandOptions,
 } from "fastify";
 import { IncomingMessage, Server, ServerResponse, request } from "http";
+import fastifyJwt from "fastify-jwt"
 import routes from "./router";
 import meta from "./package.json";
 
@@ -39,6 +40,10 @@ server.get(
     });
   },
 );
+
+server.register(fastifyJwt, {
+  secret: 'supersecret'
+})
 
 // init routes
 routes.forEach((route) => {
