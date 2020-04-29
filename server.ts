@@ -5,12 +5,39 @@ import fastify, {
   RouteShorthandOptions,
 } from "fastify";
 import { IncomingMessage, Server, ServerResponse, request } from "http";
+import fastifyOas from "fastify-oas";
 import fastifyJwt from "fastify-jwt"
 import routes from "./router";
 import meta from "./package.json";
 
 const server: FastifyInstance<Server, IncomingMessage, ServerResponse> = fastify({logger: true});
 const port = 3000;
+
+server.register(fastifyOas, {
+  routePrefix: "/documentation",
+  swagger: {
+    info: {
+      title: "Mini Wallet",
+      description: "Mini Wallet swagger api",
+      version: meta.version,
+    },
+    consumes: ["application/json"],
+    produces: ["application/json"],
+    servers: [{
+      url: "http://localhost:3000",
+      description: "localhost",
+    }],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+        },
+      },
+    },
+  },
+  exposeRoute: true,
+});
 
 const opts: RouteShorthandOptions = {
   schema: {

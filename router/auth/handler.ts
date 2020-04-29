@@ -25,7 +25,7 @@ export default class Auth {
         throw new ApiError(400, "email or password incorrect")
       }
       const token = server.jwt.sign({ email, password})
-      reply.send(token)
+      reply.send({token})
     };
   }
 

@@ -27,6 +27,27 @@ export default function(server) {
       return;
     }
   }
-  server.post('/login', auth.login(server))
-  server.get('/check', opts, auth.check())
+  //////////////// LOGIN ////////////////
+  server.post('/login', {
+    schema: {
+      body: {
+        type: "object",
+        required: ['password', 'email'],
+        properties: {
+          email: { type: "string" },
+          password: { type: "string" },
+        },
+      },
+      tags: ["user"]
+    },
+  }, auth.login(server))
+  //////////////// LOGIN ////////////////
+
+  server.get('/check', {
+    ...opts,
+    schema: {
+      tags: ["user"],
+      security: [{bearerAuth: []}],
+    },
+  }, auth.check())
 }
