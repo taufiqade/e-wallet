@@ -1,8 +1,7 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { ServerResponse } from "http";
-import userCheck from "./../../lib/userCheck"
+import userCheck from "../../lib/userCheckMiddleware"
 import { auth } from "../../bootstrap";
-import ps from "./../../lib/parser"
 import { IUser } from "../../model/user.interface";
 
 export default function(server) {

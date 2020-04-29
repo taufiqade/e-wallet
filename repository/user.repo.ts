@@ -18,4 +18,15 @@ export default class DBUserRepository {
       }]
     })
   }
+
+  findBy(conditon: object) {
+    return this.db.Users.findOne({
+      where: conditon,
+      include: [{
+        model: this.db.UserBalance,
+        required: true,
+        as: "user_balance",
+      }]
+    })
+  }
 }
