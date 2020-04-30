@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon --watch '**/*.ts' --ignore '**/*.spec.ts' --exec 'ts-node' server.ts",
     "migrate": "node_modules/.bin/sequelize db:migrate",
-    "lint": "tslint -c tslint.json '**/*.ts' -e 'node_modules/**/*'"
+    "compile": "tsc"
   },
   "devDependencies": {
     "@types/node": "^13.13.4",

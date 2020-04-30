@@ -1,0 +1,44 @@
+version: '3.3'
+services:
+  db:
+    build:
+      context: ./dockerfile
+      dockerfile: mysql
+    #image: mysql
+    restart: 'always'
+    container_name: mini-wallet-mysql
+    environment:
+      MYSQL_DATABASE: 'ewallet'
+      MYSQL_USER: 'ewallet'
+      MYSQL_PASSWORD: 'ewallet'
+      MYSQL_ROOT_PASSWORD: 'ewallet'
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
+    networks:
+      wallet_network:
+        ipv4_address: 172.16.210.12
+  app:
+    build:
+      context: .
+      dockerfile: ./dockerfile/app
+    container_name: mini-wallet-app
+    env_file: .env
+    ports:
+      - 3000:3000
+    volumes:
+      - '.:/home/node/app/:rw'
+    networks:
+      wallet_network:
+        ipv4_address: 172.16.210.11
+    tty: true
+networks:
+  wallet_network:
+    driver: bridge
+    driver_opts:
+      com.docker.network.enable_ipv6: 'false'
+    ipam:
+      driver: default
+      config: 
+        - subnet: 172.16.210.0/24
